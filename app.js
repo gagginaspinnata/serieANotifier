@@ -29,8 +29,24 @@ async function getSource(url, proxy = false) {
   }
 }
 
-// Prende in ingresso la pagina di una giornata di serie A e restituisce un array di questo tipo:
+async function getCurrentMatch(){
+  // getting source coude of the html page
+  const source = await getSource(calendario_url);
+  let $ = cheerio.load(source);
 
+  // Estraggo i dati relativi alla giornata IN CORSO
+  let giornata = $(".risultati > h3").text().trim();
+  let numero_giornata = giornata.split("-")[0].substring(0, 2);
+  giornata = giornata.split("-")[1];
+  let date = new Date(giornata);
+  giornata = {
+    date,
+    numero_giornata
+  }
+  return giornata;
+}
+
+// Prende in ingresso la pagina di una giornata di serie A e restituisce un array di questo tipo:
 // [
 //   { date: 2021-06-01T00:00:00.000Z, numero_giornata: '16' },
 //   {
@@ -109,20 +125,10 @@ async function getDataOfMatches(url){
   const source = await getSource(url);
   let $ = cheerio.load(source);
 
-  // Estraggo i dati relativi alla giornata IN CORSO
-  let giornata = $(".risultati > h3").text().trim();
-  let numero_giornata = giornata.split("-")[0].substring(0, 2);
-  giornata = giornata.split("-")[1];
-  let date = new Date(giornata);
-  giornata = {
-    date,
-    numero_giornata
-  }
 
   let results = [];
-  results.push(giornata)
 
-  let boxs_partite = $('.box-partita').each(function(i, item){
+  $('.box-partita').each(function(i, item){
 
     // Ricerca data ed ora della partita
     let data_ora = $(this).find('.datipartita > p > span').text()
