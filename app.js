@@ -86,13 +86,14 @@ async function getDataOfMatches(url) {
 }
 
 // controlla che la data mostrata in homepage corrisponda alla data odierna
-async function isThereIsAnyMatch(){
+async function isThereIsAnyMatch(matchs){
   let current_date  = new Date();
 
-  let current_match = await getCurrentMatch()
-
-  if(current_date.toLocaleDateString('it-IT')== current_match['date'].toLocaleDateString('it-IT')){
-  return true
+  for(let match of matchs){
+   
+    if (match['data'] == current_date.toLocaleDateString('it-IT') ){
+      return true
+    }
   }
   return false
   
@@ -101,8 +102,7 @@ async function isThereIsAnyMatch(){
 
 (async () => {
 
-  if(isThereIsAnyMatch()){
-    console.log(await getCurrentMatch())
-  }
+  const matchs = await getDataOfMatches('http://www.legaseriea.it/it/serie-a/calendario-e-risultati/2020-21/UNICO/UNI/17')
+  console.log(await isThereIsAnyMatch(matchs))
 
 })();
